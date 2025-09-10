@@ -118,14 +118,14 @@ async function handleSearchImages(req: NextApiRequest, res: NextApiResponse) {
             return res.status(500).json({ error: 'Chave da API Unsplash não configurada no servidor.' });
         }
 
-        // Força busca a pets/animais e restringe a fotos reais
-        const petFocusedSearchTerm = `${searchTerm} pet animal cachorro gato veterinário foto realista`;
+        // Força busca a pets/animais
+        const petFocusedSearchTerm = `${searchTerm} pet animal cachorro gato veterinário`;
 
         const unsplashApiUrl = new URL('https://api.unsplash.com/search/photos');
         unsplashApiUrl.searchParams.append('query', petFocusedSearchTerm);
-        unsplashApiUrl.searchParams.append('per_page', '9');
-        unsplashApiUrl.searchParams.append('orientation', 'squarish'); // ideal para Instagram
-        unsplashApiUrl.searchParams.append('content_filter', 'high'); // remove imagens sensíveis
+        unsplashApiUrl.searchParams.append('per_page', '15'); // mais resultados para filtrar
+        unsplashApiUrl.searchParams.append('orientation', 'squarish'); // ideal p/ Instagram
+        unsplashApiUrl.searchParams.append('content_filter', 'high');
 
         const unsplashResponse = await fetch(unsplashApiUrl.toString(), {
             headers: { 'Authorization': `Client-ID ${unsplashAccessKey}` }
@@ -138,10 +138,23 @@ async function handleSearchImages(req: NextApiRequest, res: NextApiResponse) {
         
         const data = await unsplashResponse.json();
 
-        // Garante que só fotos sejam retornadas
-        const onlyPhotos = data.results.filter((img: any) => img.type === 'photo');
+        // Lista de palavras-chave que obrigatoriamente devem aparecer
+        const petKeywords = [
+            'dog','cat','puppy','kitten','pet','animal','animals',
+            'cachorro','cão','gato','gatinho','veterinário','pet shop'
+        ];
 
-        return res.status(200).json({ ...data, results: onlyPhotos });
+        // Filtro: só retorna fotos que tenham ligação clara com pets/animais
+        const onlyPetPhotos = data.results.filter((img: any) => {
+            if (img.type !== 'photo') return false;
+
+            const alt = img.alt_description?.toLowerCase() || '';
+            const tags = (img.tags || []).map((t: any) => t.title?.toLowerCase() || '');
+
+            return petKeywords.some(keyword => alt.includes(keyword) || tags.some((t: string) => t.includes(keyword)));
+        });
+
+        return res.status(200).json({ ...data, results: onlyPetPhotos });
 
     } catch (error) {
         console.error('Erro ao buscar imagens no Unsplash:', error);
