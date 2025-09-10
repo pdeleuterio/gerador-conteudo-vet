@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { searchImages } from '../services/unsplashService'; // Importa o novo serviço
+import { searchImages } from '../services/unsplashService';
 import { UnsplashImage } from '../types';
 
 interface StockMediaLinksProps {
     searchTerm: string;
-    tone: string;
 }
 
 export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) => {
@@ -18,7 +17,6 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
         setError(null);
         setHasSearched(true);
         try {
-            // Usa o novo serviço que chama o WordPress
             const results = await searchImages(searchTerm);
             setImages(results);
         } catch (err) {
@@ -34,7 +32,7 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
         <div className="p-4 bg-slate-50 rounded-md">
             <h3 className="text-lg font-semibold text-slate-700">Encontre uma imagem para seu post</h3>
             <p className="mt-1 text-sm text-slate-500">
-                Clique abaixo para buscar imagens no Unsplash com base na ideia do post.
+                Buscando por: <span className="font-semibold">"{searchTerm}"</span>
             </p>
             <div className="mt-4">
                 <button
@@ -59,7 +57,7 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
             {!isLoading && hasSearched && images.length === 0 && !error && (
-                <p className="mt-4 text-sm text-slate-500">Nenhuma imagem encontrada para "{searchTerm}". Tente um termo mais genérico.</p>
+                <p className="mt-4 text-sm text-slate-500">Nenhuma imagem encontrada. Tente gerar o conteúdo para outra data.</p>
             )}
 
             {images.length > 0 && (
