@@ -17,7 +17,8 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
         setError(null);
         setHasSearched(true);
         try {
-            const results = await searchImages(searchTerm);
+            // 🔑 sempre adiciona "animals" à busca
+            const results = await searchImages(`${searchTerm} animals`);
             setImages(results);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Ocorreu um erro desconhecido.';
@@ -30,9 +31,9 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
 
     return (
         <div className="p-4 bg-slate-50 rounded-md">
-            <h3 className="text-lg font-semibold text-slate-700">Encontre uma imagem para seu post</h3>
+            <h3 className="text-lg font-semibold text-slate-700">Encontre uma imagem de animal para seu post</h3>
             <p className="mt-1 text-sm text-slate-500">
-                Buscando por: <span className="font-semibold">"{searchTerm}"</span>
+                Buscando por: <span className="font-semibold">"{searchTerm} (animais)"</span>
             </p>
             <div className="mt-4">
                 <button
@@ -49,7 +50,7 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
                             Buscando...
                         </>
                     ) : (
-                       'Buscar imagens no Unsplash'
+                       'Buscar imagens de animais'
                     )}
                 </button>
             </div>
@@ -76,4 +77,4 @@ export const StockMediaLinks: React.FC<StockMediaLinksProps> = ({ searchTerm }) 
             )}
         </div>
     );
-};
+}; 
